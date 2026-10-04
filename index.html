@@ -299,7 +299,6 @@
   <div class="paper">
     <h3 class="gold-text" id="letterTitle"></h3>
     <div id="letterBody"></div>
-    <div class="sign gold-text" id="sign"></div>
   </div>
 </section>
 
@@ -331,7 +330,6 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
 $('#cakeName').textContent = NAME;
 $('#ageNum').textContent = AGE;
 $('#letterTitle').textContent = 'Happy '+AGE+', '+NAME;
-$('#sign').textContent = '— '+FROM;
 
 /* ---------- sky ---------- */
 const sky=$('#stars');
@@ -463,7 +461,6 @@ async function typeLetter(){
     caret.remove();
     await sleep(550);
   }
-  $('#sign').classList.add('in');
   fireworksOn=true;
   setTimeout(()=>burst(200,innerWidth/2,innerHeight/2),600);
 }
