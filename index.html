@@ -70,6 +70,16 @@
   .btn:hover{transform:scale(1.07)}
   .btn:active{transform:scale(.95)}
 
+  /* ============ Lock / countdown ============ */
+  .lock-ic{font-size:56px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(255,209,102,.6))}
+  .lk-title{font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(46px,12vw,84px);line-height:1.1;margin:14px 0 8px}
+  .lk-sub{font-weight:300;font-size:15px;letter-spacing:.5px;opacity:.85;max-width:320px;line-height:1.6}
+  .lk-sub.small{font-size:13px;opacity:.6;margin-top:18px}
+  .cd{font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(46px,14vw,84px);letter-spacing:2px;margin-top:22px;
+    color:var(--gold2);text-shadow:0 0 24px rgba(255,209,102,.55)}
+  .cd.final{font-size:clamp(110px,40vw,220px);animation:pop .9s ease-out}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}30%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+
   /* ============ Scene 1: envelope ============ */
   #scene1 h1{font-family:'Great Vibes',cursive;font-weight:400;
     font-size:clamp(46px,12vw,88px);line-height:1.05;margin-top:46px;
@@ -232,8 +242,17 @@
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 
+<!-- 0: locked until midnight -->
+<section class="scene" id="lock">
+  <div class="lock-ic">🔒</div>
+  <h1 class="gold-text lk-title">Konjam wait pannu...</h1>
+  <p class="lk-sub">Indha surprise nadu raathiri 12 mani ku dhaan thirakkum ✨</p>
+  <div id="cd" class="cd">--:--:--</div>
+  <p class="lk-sub small">Clock 12 adikka poguthu... ready ah iru 🌙</p>
+</section>
+
 <!-- 1: envelope -->
-<section class="scene active" id="scene1">
+<section class="scene" id="scene1">
   <div class="env-stage" id="envStage">
     <div class="env-glow"></div>
     <div class="env">
@@ -323,7 +342,7 @@ const STORY = [
 
 const $ = s => document.querySelector(s);
 const scenes = ['#scene1','#scene2','#scene3','#scene4','#scene5'].map(s=>$(s));
-const show = i => scenes.forEach((s,k)=>s.classList.toggle('active',k===i));
+const show = i => { document.getElementById('lock').classList.remove('active'); scenes.forEach((s,k)=>s.classList.toggle('active',k===i)); };
 const rnd = (a,b)=>a+Math.random()*(b-a);
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
@@ -515,6 +534,37 @@ $('#blowBtn').onclick=()=>{
     setTimeout(()=>{ show(4); typeLetter(); },8500);
   },3300);
 };
+
+/* ---------- midnight lock ---------- */
+// Opens at 12:00 AM (local time) on 5 Oct 2026. Test now: add ?open at end of file name.
+const UNLOCK = new Date('2026-10-05T00:00:00');
+const lockEl=$('#lock'), cd=$('#cd'), p2=n=>String(n).padStart(2,'0');
+let lockTimer=null, unlocked=false, lastS=-1;
+function unlock(){
+  if(unlocked) return; unlocked=true; clearInterval(lockTimer);
+  $('#flash').classList.add('go');
+  burst(220,innerWidth/2,innerHeight/2);
+  setTimeout(()=>burst(160,innerWidth*.2,innerHeight/3),400);
+  setTimeout(()=>burst(160,innerWidth*.8,innerHeight/3),700);
+  show(0);
+}
+function tick(){
+  const d=UNLOCK-Date.now();
+  if(d<=0){ unlock(); return; }
+  const s=Math.ceil(d/1000);
+  if(s===lastS) return; lastS=s;
+  if(s<=10){
+    cd.classList.remove('final'); void cd.offsetWidth; cd.classList.add('final'); cd.textContent=s;
+  } else {
+    cd.classList.remove('final');
+    cd.textContent=p2(Math.floor(s/3600))+':'+p2(Math.floor(s%3600/60))+':'+p2(s%60);
+  }
+}
+if(true){
+  unlocked=true; show(0);
+} else {
+  lockEl.classList.add('active'); tick(); lockTimer=setInterval(tick,250);
+}
 </script>
 </body>
 </html>
