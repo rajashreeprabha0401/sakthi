@@ -560,7 +560,7 @@ function tick(){
     cd.textContent=p2(Math.floor(s/3600))+':'+p2(Math.floor(s%3600/60))+':'+p2(s%60);
   }
 }
-if(Date.now()>=UNLOCK || location.search.includes('open')){
+if(true){
   unlocked=true; show(0);
 } else {
   lockEl.classList.add('active'); tick(); lockTimer=setInterval(tick,250);
